@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>EarnZone - Statistiques</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  
+  <style>
+    /* ===== VARIABLES GLOBALES ===== */
+    :root {
+      --primary: #00ffcc;
+      --primary-dark: #00cca3;
+      --secondary: #ff4d94;
+      --accent: #9d4edd;
+      --bg-dark: #000000;
+      --bg-medium: #0a0a0a;
+      --bg-light: #1a1a1a;
+      --text-light: #ffffff;
+      --text-dim: #94a3b8;
+      --card-bg: rgba(20, 20, 20, 0.8);
+      --card-border: rgba(255, 255, 255, 0.05);
+      --success: #4cff4c;
+      --warning: #ffcc00;
+      --danger: #ff4757;
+      --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+      --shadow-glow: 0 0 30px rgba(0, 255, 204, 0.2);
+      --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+      --glass-bg: rgba(255, 255, 255, 0.02);
+      --glass-border: rgba(255, 255, 255, 0.03);
+    }
+
+    /* ===== RESET & BASE ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #000000;
+      color: var(--text-light);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      position: relative;
+      font-size: 14px;
+      line-height: 1.5;
+      padding-bottom: 100px;
+    }
+
+    /* ===== BACKGROUND ===== */
+    .gradient-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      background: radial-gradient(circle at 20% 30%, rgba(0, 255, 204, 0.08) 0%, transparent 40%),
+                  radial-gradient(circle at 80% 70%, rgba(157, 78, 221, 0.08) 0%, transparent 40%),
+                  radial-gradient(circle at 40% 80%, rgba(255, 77, 148, 0.08) 0%, transparent 40%);
+    }
+
+    .noise {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.15;
+      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJmIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc0IiBudW1PY3RhdmVzPSIzIiAvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNmKSIgb3BhY2l0eT0iMC4xIiAvPjwvc3ZnPg==');
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 5%;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 14px;
+      transition: var(--transition);
+    }
+
+    .back-btn:hover {
+      color: var(--primary);
+    }
+
+    .page-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .page-title i {
+      color: var(--primary);
+    }
+
+    .balance-display {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 255, 204, 0.05);
+      border: 1px solid rgba(0, 255, 204, 0.1);
+      border-radius: 30px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    /* ===== CONTENEUR PRINCIPAL ===== */
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px 16px;
+    }
+
+    /* ===== STATISTIQUES RAPIDES ===== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 20px;
+      transition: var(--transition);
+    }
+
+    .stat-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-5px);
+    }
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .stat-icon {
+      width: 45px;
+      height: 45px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: black;
+    }
+
+    .stat-title {
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .stat-change {
+      font-size: 12px;
+      color: var(--success);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* ===== FILTRES DE PÉRIODE ===== */
+    .period-filters {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      padding-bottom: 5px;
+    }
+
+    .filter-btn {
+      flex: 1;
+      min-width: 70px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 30px;
+      color: var(--text-dim);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .filter-btn:hover {
+      background: rgba(0, 255, 204, 0.1);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .filter-btn.active {
+      background: rgba(0, 255, 204, 0.15);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* ===== GRAPHIQUES ===== */
+    .chart-section {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 20px;
+      margin-bottom: 25px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chart-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+
+    .chart-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: var(--primary);
+    }
+
+    .chart-container {
+      position: relative;
+      height: 250px;
+      margin-bottom: 15px;
+    }
+
+    .chart-stats {
+      display: flex;
+      justify-content: space-around;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .chart-stat-item {
+      text-align: center;
+    }
+
+    .chart-stat-label {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-bottom: 5px;
+    }
+
+    .chart-stat-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* ===== STATISTIQUES DÉTAILLÉES ===== */
+    .details-section {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .detail-item {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 16px;
+      padding: 15px;
+    }
+
+    .detail-label {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .detail-value {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .detail-sub {
+      font-size: 11px;
+      color: var(--success);
+    }
+
+    /* ===== RÉPARTITION DES PACKS ===== */
+    .packs-section {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+
+    .packs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .pack-stat {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 16px;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .pack-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .pack-count {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 5px;
+    }
+
+    .pack-earnings {
+      font-size: 12px;
+      color: var(--success);
+    }
+
+    /* ===== ACTIVITÉS RÉCENTES ===== */
+    .activities-section {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    .activity-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .activity-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: black;
+    }
+
+    .activity-info {
+      flex: 1;
+    }
+
+    .activity-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .activity-time {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .activity-amount {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .positive {
+      color: var(--success);
+    }
+
+    .negative {
+      color: var(--danger);
+    }
+
+    /* ===== PRÉVISIONS ===== */
+    .forecast-section {
+      background: linear-gradient(135deg, rgba(0, 255, 204, 0.1), rgba(157, 78, 221, 0.1));
+      border-radius: 24px;
+      padding: 20px;
+      margin-bottom: 25px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .forecast-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+
+    .forecast-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .forecast-item {
+      text-align: center;
+    }
+
+    .forecast-label {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .forecast-value {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .today {
+      color: var(--primary);
+    }
+
+    .tomorrow {
+      color: var(--success);
+    }
+
+    .week {
+      color: var(--warning);
+    }
+
+    /* ===== BOUTON RETOUR ===== */
+    .back-home {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: black;
+      padding: 16px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 16px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0, 255, 204, 0.3);
+      z-index: 99;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* ===== NOTIFICATION ===== */
+    .notification {
+      position: fixed;
+      bottom: 80px;
+      left: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--primary);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      z-index: 1000;
+      transform: translateY(200px);
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .notification.show {
+      transform: translateY(0);
+    }
+
+    .notification-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: black;
+    }
+
+    .notification-content h4 {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .notification-content p {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== BACKGROUND ===== -->
+  <div class="gradient-bg"></div>
+  <div class="noise"></div>
+
+  <!-- ===== NOTIFICATION ===== -->
+  <div class="notification" id="notification">
+    <div class="notification-icon">
+      <i class="fas fa-gift"></i>
+    </div>
+    <div class="notification-content">
+      <h4 id="notificationTitle">Statistiques</h4>
+      <p id="notificationMessage">Bienvenue dans votre espace</p>
+    </div>
+  </div>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <a href="index.html" class="back-btn">
+      <i class="fas fa-arrow-left"></i>
+      <span>Retour</span>
+    </a>
+    <div class="page-title">
+      <i class="fas fa-chart-bar"></i>
+      <span>Statistiques</span>
+    </div>
+    <div class="balance-display">
+      <i class="fas fa-coins"></i>
+      <span id="currentBalance">0 FCFA</span>
+    </div>
+  </header>
+
+  <!-- ===== CONTENU PRINCIPAL ===== -->
+  <div class="container">
+    
+    <!-- ===== STATISTIQUES RAPIDES ===== -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon">
+            <i class="fas fa-wallet"></i>
+          </div>
+          <div>
+            <div class="stat-title">Solde actuel</div>
+            <div class="stat-value" id="statBalance">0 FCFA</div>
+          </div>
+        </div>
+        <div class="stat-change">
+          <i class="fas fa-arrow-up"></i>
+          <span id="balanceChange">+0% aujourd'hui</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <div>
+            <div class="stat-title">Total gagné</div>
+            <div class="stat-value" id="statTotalEarned">0 FCFA</div>
+          </div>
+        </div>
+        <div class="stat-change">
+          <i class="fas fa-calendar"></i>
+          <span id="totalEarnedChange">Depuis inscription</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon">
+            <i class="fas fa-user-friends"></i>
+          </div>
+          <div>
+            <div class="stat-title">Filleuls</div>
+            <div class="stat-value" id="statReferrals">0</div>
+          </div>
+        </div>
+        <div class="stat-change">
+          <i class="fas fa-arrow-up"></i>
+          <span id="referralsChange">+0 ce mois</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon">
+            <i class="fas fa-coins"></i>
+          </div>
+          <div>
+            <div class="stat-title">Commissions</div>
+            <div class="stat-value" id="statCommission">0 FCFA</div>
+          </div>
+        </div>
+        <div class="stat-change">
+          <i class="fas fa-arrow-up"></i>
+          <span id="commissionChange">+0 FCFA</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FILTRES DE PÉRIODE ===== -->
+    <div class="period-filters">
+      <button class="filter-btn active" data-period="day" onclick="changePeriod('day')">Jour</button>
+      <button class="filter-btn" data-period="week" onclick="changePeriod('week')">Semaine</button>
+      <button class="filter-btn" data-period="month" onclick="changePeriod('month')">Mois</button>
+      <button class="filter-btn" data-period="year" onclick="changePeriod('year')">Année</button>
+      <button class="filter-btn" data-period="all" onclick="changePeriod('all')">Tout</button>
+    </div>
+
+    <!-- ===== GRAPHIQUE PRINCIPAL ===== -->
+    <div class="chart-section">
+      <h3 class="chart-title">
+        <i class="fas fa-chart-line"></i>
+        Évolution des gains
+      </h3>
+      <div class="chart-container">
+        <canvas id="mainChart"></canvas>
+      </div>
+      <div class="chart-stats">
+        <div class="chart-stat-item">
+          <div class="chart-stat-label">Moyenne</div>
+          <div class="chart-stat-value" id="avgEarnings">0 FCFA</div>
+        </div>
+        <div class="chart-stat-item">
+          <div class="chart-stat-label">Maximum</div>
+          <div class="chart-stat-value" id="maxEarnings">0 FCFA</div>
+        </div>
+        <div class="chart-stat-item">
+          <div class="chart-stat-label">Minimum</div>
+          <div class="chart-stat-value" id="minEarnings">0 FCFA</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== GRAPHIQUE CIRCULAIRE ===== -->
+    <div class="chart-section">
+      <h3 class="chart-title">
+        <i class="fas fa-chart-pie"></i>
+        Répartition des gains
+      </h3>
+      <div class="chart-container" style="height: 200px;">
+        <canvas id="pieChart"></canvas>
+      </div>
+      <div class="chart-stats">
+        <div class="chart-stat-item">
+          <div class="chart-stat-label">Invest.</div>
+          <div class="chart-stat-value" id="pieInvestments">0%</div>
+        </div>
+        <div class="chart-stat-item">
+          <div class="chart-stat-label">Parrainage</div>
+          <div class="chart-stat-value" id="pieReferrals">0%</div>
+        </div>
+        <div class="chart-stat-item">
+          <div class="chart-stat-label">Bonus</div>
+          <div class="chart-stat-value" id="pieBonus">0%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== STATISTIQUES DÉTAILLÉES ===== -->
+    <div class="details-section">
+      <h3 class="chart-title">
+        <i class="fas fa-info-circle"></i>
+        Détails
+      </h3>
+      <div class="details-grid">
+        <div class="detail-item">
+          <div class="detail-label">Investissements actifs</div>
+          <div class="detail-value" id="activeInvestments">0</div>
+          <div class="detail-sub" id="activeInvestmentsChange">+0 aujourd'hui</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Investissements terminés</div>
+          <div class="detail-value" id="completedInvestments">0</div>
+          <div class="detail-sub">Depuis le début</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Taux de réussite</div>
+          <div class="detail-value" id="successRate">0%</div>
+          <div class="detail-sub">Moyenne</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Meilleur jour</div>
+          <div class="detail-value" id="bestDay">-</div>
+          <div class="detail-sub" id="bestDayAmount">0 FCFA</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== RÉPARTITION DES PACKS ===== -->
+    <div class="packs-section">
+      <h3 class="chart-title">
+        <i class="fas fa-cubes"></i>
+        Packs d'investissement
+      </h3>
+      <div class="packs-grid" id="packsStats">
+        <!-- Les packs seront chargés dynamiquement -->
+      </div>
+    </div>
+
+     <!-- ===== ACTIVITÉS RÉCENTES ===== -->
+    <div class="activities-section">
+      <h3 class="chart-title">
+        <i class="fas fa-clock"></i>
+        Activités récentes
+      </h3>
+      <div id="activitiesList">
+        <!-- Les activités seront chargées dynamiquement -->
+      </div>
+    </div>
+
+    <!-- ===== PRÉVISIONS ===== -->
+    <div class="forecast-section">
+      <h3 class="chart-title">
+        <i class="fas fa-chart-line"></i>
+        Prévisions
+      </h3>
+      <div class="forecast-grid">
+        <div class="forecast-item">
+          <div class="forecast-label">Aujourd'hui</div>
+          <div class="forecast-value today" id="forecastToday">0 FCFA</div>
+        </div>
+        <div class="forecast-item">
+          <div class="forecast-label">Demain</div>
+          <div class="forecast-value tomorrow" id="forecastTomorrow">0 FCFA</div>
+        </div>
+        <div class="forecast-item">
+          <div class="forecast-label">Cette semaine</div>
+          <div class="forecast-value week" id="forecastWeek">0 FCFA</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== BOUTON RETOUR ===== -->
+  <a href="index.html" class="back-home">
+    <i class="fas fa-home"></i>
+    Retour à l'accueil
+  </a>
+
+  <script>
+    // ============================================
+    // VARIABLES GLOBALES
+    // ============================================
+    let userData = null;
+    let userId = null;
+    let mainChart = null;
+    let pieChart = null;
+    let currentPeriod = 'day';
+
+    // ============================================
+    // INITIALISATION
+    // ============================================
+    function init() {
+      loadUserData();
+      initCharts();
+      loadPacksStats();
+      loadActivities();
+      updateForecasts();
+      startSync();
+    }
+
+    // ============================================
+    // CHARGER LES DONNÉES UTILISATEUR
+    // ============================================
+    function loadUserData() {
+      userId = localStorage.getItem('earnzone_current_user');
+      
+      if (!userId) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      const userDataStr = localStorage.getItem(`earnzone_user_${userId}`);
+      
+      if (userDataStr) {
+        userData = JSON.parse(userDataStr);
+        updateStats();
+      } else {
+        window.location.href = 'login.html';
+      }
+    }
+
+    // ============================================
+    // METTRE À JOUR LES STATISTIQUES
+    // ============================================
+    function updateStats() {
+      if (!userData) return;
+      
+      const balance = userData.balance || 0;
+      const totalEarned = userData.totalEarned || 0;
+      const referrals = userData.referrals?.length || 0;
+      const commission = userData.referralEarnings || 0;
+      const investments = userData.investments || [];
+      
+      const activeInvestments = investments.filter(inv => inv.status === 'active').length;
+      const completedInvestments = investments.filter(inv => inv.status === 'completed').length;
+      
+      document.getElementById('currentBalance').textContent = formatCurrency(balance) + ' FCFA';
+      document.getElementById('statBalance').textContent = formatCurrency(balance) + ' FCFA';
+      document.getElementById('statTotalEarned').textContent = formatCurrency(totalEarned) + ' FCFA';
+      document.getElementById('statReferrals').textContent = referrals;
+      document.getElementById('statCommission').textContent = formatCurrency(commission) + ' FCFA';
+      
+      document.getElementById('activeInvestments').textContent = activeInvestments;
+      document.getElementById('completedInvestments').textContent = completedInvestments;
+      
+      const successRate = activeInvestments + completedInvestments > 0 
+        ? Math.round((completedInvestments / (activeInvestments + completedInvestments)) * 100) 
+        : 0;
+      document.getElementById('successRate').textContent = successRate + '%';
+      
+      // Changements simulés
+      document.getElementById('balanceChange').innerHTML = '<i class="fas fa-arrow-up"></i> +12% aujourd\'hui';
+      document.getElementById('referralsChange').innerHTML = '<i class="fas fa-arrow-up"></i> +2 ce mois';
+      document.getElementById('commissionChange').innerHTML = '<i class="fas fa-arrow-up"></i> +' + formatCurrency(commission) + ' FCFA';
+      document.getElementById('activeInvestmentsChange').innerHTML = '<i class="fas fa-arrow-up"></i> +0 aujourd\'hui';
+    }
+
+    // ============================================
+    // INITIALISER LES GRAPHIQUES
+    // ============================================
+    function initCharts() {
+      // Graphique principal
+      const ctx = document.getElementById('mainChart').getContext('2d');
+      
+      if (mainChart) mainChart.destroy();
+      
+      mainChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: getLabelsForPeriod('day'),
+          datasets: [{
+            label: 'Gains (FCFA)',
+            data: getDataForPeriod('day'),
+            borderColor: '#00ffcc',
+            backgroundColor: 'rgba(0, 255, 204, 0.1)',
+            borderWidth: 2,
+            pointBackgroundColor: '#00ffcc',
+            pointBorderColor: '#000',
+            pointBorderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(0,0,0,0.9)',
+              titleColor: '#00ffcc',
+              bodyColor: '#fff',
+              borderColor: '#00ffcc',
+              borderWidth: 1,
+              callbacks: {
+                label: function(context) {
+                  return context.raw + ' FCFA';
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              grid: { color: 'rgba(255,255,255,0.05)' },
+              ticks: { color: '#94a3b8' }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#94a3b8' }
+            }
+          }
+        }
+      });
+      
+      // Graphique circulaire
+      const pieCtx = document.getElementById('pieChart').getContext('2d');
+      
+      if (pieChart) pieChart.destroy();
+      
+      pieChart = new Chart(pieCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Investissements', 'Parrainages', 'Bonus'],
+          datasets: [{
+            data: [70, 20, 10],
+            backgroundColor: ['#00ffcc', '#ff4d94', '#9d4edd'],
+            borderColor: '#000',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(0,0,0,0.9)',
+              titleColor: '#00ffcc',
+              bodyColor: '#fff',
+              borderColor: '#00ffcc',
+              borderWidth: 1,
+              callbacks: {
+                label: function(context) {
+                  return context.raw + '%';
+                }
+              }
+            }
+          },
+          cutout: '65%'
+        }
+      });
+      
+      document.getElementById('pieInvestments').textContent = '70%';
+      document.getElementById('pieReferrals').textContent = '20%';
+      document.getElementById('pieBonus').textContent = '10%';
+    }
+
+    // ============================================
+    // CHANGER LA PÉRIODE
+    // ============================================
+    function changePeriod(period) {
+      currentPeriod = period;
+      
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`[data-period="${period}"]`).classList.add('active');
+      
+      if (mainChart) {
+        mainChart.data.labels = getLabelsForPeriod(period);
+        mainChart.data.datasets[0].data = getDataForPeriod(period);
+        mainChart.update();
+      }
+      
+      updateChartStats(period);
+    }
+
+    // ============================================
+    // OBTENIR LES LABELS
+    // ============================================
+    function getLabelsForPeriod(period) {
+      if (period === 'day') {
+        return ['00h', '03h', '06h', '09h', '12h', '15h', '18h', '21h'];
+      } else if (period === 'week') {
+        return ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+      } else if (period === 'month') {
+        return ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'];
+      } else if (period === 'year') {
+        return ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+      } else {
+        return ['2022', '2023', '2024', '2025'];
+      }
+    }
+
+    // ============================================
+    // OBTENIR LES DONNÉES
+    // ============================================
+    function getDataForPeriod(period) {
+      if (period === 'day') {
+        return [1200, 1500, 800, 2100, 2800, 3200, 2900, 3500];
+      } else if (period === 'week') {
+        return [5200, 6100, 5800, 7200, 8100, 6900, 7500];
+      } else if (period === 'month') {
+        return [18500, 22100, 19800, 24500];
+      } else if (period === 'year') {
+        return [45200, 48700, 52300, 56800, 61200, 65800, 70300, 74900, 79500, 84200, 88700, 93200];
+      } else {
+        return [452000, 587000, 723000, 892000];
+      }
+    }
+
+    // ============================================
+    // METTRE À JOUR LES STATS DU GRAPHIQUE
+    // ============================================
+    function updateChartStats(period) {
+      const data = getDataForPeriod(period);
+      const avg = Math.round(data.reduce((a, b) => a + b, 0) / data.length);
+      const max = Math.max(...data);
+      const min = Math.min(...data);
+      
+      document.getElementById('avgEarnings').textContent = formatCurrency(avg) + ' FCFA';
+      document.getElementById('maxEarnings').textContent = formatCurrency(max) + ' FCFA';
+      document.getElementById('minEarnings').textContent = formatCurrency(min) + ' FCFA';
+    }
+
+    // ============================================
+    // CHARGER LES STATS DES PACKS
+    // ============================================
+    function loadPacksStats() {
+      const packs = [
+        { name: 'Bronze', icon: 'fa-medal', color: '#cd7f32' },
+        { name: 'Argent', icon: 'fa-medal', color: '#c0c0c0' },
+        { name: 'Or', icon: 'fa-crown', color: '#ffd700' },
+        { name: 'Platine', icon: 'fa-gem', color: '#e5e4e2' },
+        { name: 'Diamant', icon: 'fa-star', color: '#b9f2ff' }
+      ];
+      
+      const investments = userData?.investments || [];
+      
+      let html = '';
+      packs.forEach(pack => {
+        const packInvestments = investments.filter(inv => inv.packName === pack.name);
+        const count = packInvestments.length;
+        const earnings = packInvestments.reduce((sum, inv) => sum + (inv.totalEarned || 0), 0);
+        
+        html += `
+          <div class="pack-stat">
+            <div class="pack-name">${pack.name}</div>
+            <div class="pack-count">${count}</div>
+            <div class="pack-earnings">+${formatCurrency(earnings)}</div>
+          </div>
+        `;
+      });
+      
+      document.getElementById('packsStats').innerHTML = html;
+    }
+
+    // ============================================
+    // CHARGER LES ACTIVITÉS
+    // ============================================
+    function loadActivities() {
+      const activities = [
+        { type: 'investment', title: 'Pack Bronze actif', time: 'Il y a 2h', amount: '+500 FCFA/jour' },
+        { type: 'referral', title: 'Nouveau filleul', time: 'Il y a 5h', amount: '+500 FCFA' },
+        { type: 'investment', title: 'Pack Or terminé', time: 'Hier', amount: '+14 000 FCFA' },
+        { type: 'bonus', title: 'Bonus quotidien', time: 'Hier', amount: '+100 FCFA' }
+      ];
+      
+      let html = '';
+      activities.forEach(act => {
+        const amountClass = act.amount.includes('+') ? 'positive' : 'negative';
+        
+        html += `
+          <div class="activity-item">
+            <div class="activity-icon">
+              <i class="fas fa-${act.type === 'investment' ? 'chart-line' : act.type === 'referral' ? 'user-plus' : 'gift'}"></i>
+            </div>
+            <div class="activity-info">
+              <div class="activity-title">${act.title}</div>
+              <div class="activity-time">${act.time}</div>
+            </div>
+            <div class="activity-amount ${amountClass}">${act.amount}</div>
+          </div>
+        `;
+      });
+      
+      document.getElementById('activitiesList').innerHTML = html;
+    }
+
+    // ============================================
+    // METTRE À JOUR LES PRÉVISIONS
+    // ============================================
+    function updateForecasts() {
+      const investments = userData?.investments || [];
+      const dailyTotal = investments
+        .filter(inv => inv.status === 'active')
+        .reduce((sum, inv) => sum + (inv.dailyReturn || 0), 0);
+      
+      document.getElementById('forecastToday').textContent = formatCurrency(dailyTotal) + ' FCFA';
+      document.getElementById('forecastTomorrow').textContent = formatCurrency(dailyTotal) + ' FCFA';
+      document.getElementById('forecastWeek').textContent = formatCurrency(dailyTotal * 7) + ' FCFA';
+    }
+
+    // ============================================
+    // NOTIFICATION
+    // ============================================
+    function showNotification(title, message, type = 'success') {
+      const notification = document.getElementById('notification');
+      document.getElementById('notificationTitle').textContent = title;
+      document.getElementById('notificationMessage').textContent = message;
+      notification.classList.add('show');
+      setTimeout(() => notification.classList.remove('show'), 3000);
+    }
+
+    // ============================================
+    // FORMATER UNE VALEUR MONÉTAIRE
+    // ============================================
+    function formatCurrency(amount) {
+      return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    }
+
+    // ============================================
+    // SYNCHRONISATION
+    // ============================================
+    function startSync() {
+      setInterval(function() {
+        const savedData = localStorage.getItem(`earnzone_user_${userId}`);
+        if (savedData) {
+          const freshData = JSON.parse(savedData);
+          if (JSON.stringify(userData) !== JSON.stringify(freshData)) {
+            userData = freshData;
+            updateStats();
+            loadPacksStats();
+            updateForecasts();
+          }
+        }
+      }, 3000);
+    }
+
+    // ============================================
+    // DÉMARRER L'APPLICATION
+    // ============================================
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+
+</body>
+</html>

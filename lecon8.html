@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>EarnZone - Module 3: Suivre ses gains</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Mêmes styles que précédemment */
+    :root {
+      --primary: #00ffcc;
+      --primary-dark: #00cca3;
+      --secondary: #ff4d94;
+      --accent: #9d4edd;
+      --bg-dark: #000000;
+      --text-light: #ffffff;
+      --text-dim: #94a3b8;
+      --card-bg: rgba(20, 20, 20, 0.8);
+      --card-border: rgba(255, 255, 255, 0.05);
+      --success: #4cff4c;
+      --warning: #ffcc00;
+      --danger: #ff4757;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #000000;
+      color: var(--text-light);
+      padding-bottom: 100px;
+    }
+
+    .gradient-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      background: radial-gradient(circle at 20% 30%, rgba(0, 255, 204, 0.05) 0%, transparent 40%),
+                  radial-gradient(circle at 80% 70%, rgba(157, 78, 221, 0.05) 0%, transparent 40%);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 5%;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(20px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .course-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .course-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .progress-badge {
+      background: rgba(0, 255, 204, 0.1);
+      border: 1px solid rgba(0, 255, 204, 0.2);
+      border-radius: 30px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: var(--primary);
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px 16px;
+    }
+
+    .lesson-banner {
+      background: linear-gradient(135deg, rgba(0, 255, 204, 0.1), rgba(157, 78, 221, 0.1));
+      border-radius: 24px;
+      padding: 25px 20px;
+      margin-bottom: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .lesson-banner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+
+    .module-path {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 15px;
+      font-size: 12px;
+    }
+
+    .module-name {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .lesson-number {
+      color: var(--text-dim);
+    }
+
+    .lesson-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .lesson-meta {
+      display: flex;
+      gap: 20px;
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+
+    .video-section {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: var(--primary);
+    }
+
+    .video-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      background: #000;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .video-placeholder {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(45deg, #111, #222);
+      cursor: pointer;
+    }
+
+    .play-btn {
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: black;
+      margin-bottom: 15px;
+    }
+
+    .content-section {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .dashboard-preview {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--primary);
+      border-radius: 20px;
+      padding: 20px;
+      margin: 25px 0;
+    }
+
+    .dashboard-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    .dashboard-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .item-label {
+      font-size: 14px;
+    }
+
+    .item-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      margin: 10px 0;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--success));
+      width: 60%;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .stat-box {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .quiz-section {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 15px 0;
+    }
+
+    .quiz-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .quiz-option:hover {
+      background: rgba(0, 255, 204, 0.05);
+      border-color: var(--primary);
+    }
+
+    .quiz-option input[type="radio"] {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+    }
+
+    .quiz-option input[type="radio"]:checked {
+      border-color: var(--primary);
+      background: var(--primary);
+    }
+
+    .quiz-feedback {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 12px;
+      display: none;
+    }
+
+    .quiz-feedback.correct {
+      background: rgba(76, 255, 76, 0.1);
+      border: 1px solid rgba(76, 255, 76, 0.2);
+      color: var(--success);
+      display: block;
+    }
+
+    .quiz-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: black;
+      border: none;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .complete-section {
+      margin: 25px 0;
+    }
+
+    .complete-btn {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, var(--success), #00cc44);
+      color: black;
+      border: none;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .lesson-nav {
+      display: flex;
+      gap: 12px;
+      margin: 25px 0;
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 16px;
+      border-radius: 16px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .nav-btn.prev {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-light);
+    }
+
+    .nav-btn.next {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: black;
+    }
+
+    .back-home {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: black;
+      padding: 16px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 16px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0, 255, 204, 0.3);
+      z-index: 99;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="gradient-bg"></div>
+
+  <header class="header">
+    <a href="index.html" class="back-btn">
+      <i class="fas fa-arrow-left"></i> Formation
+    </a>
+    <div class="course-info">
+      <span class="course-title">Module 3</span>
+      <span class="progress-badge" id="progressBadge">0%</span>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- BANNIÈRE -->
+    <div class="lesson-banner">
+      <div class="module-path">
+        <span class="module-name">Module 3</span>
+        <span class="separator">›</span>
+        <span class="lesson-number">Leçon 2/3</span>
+      </div>
+      <h1 class="lesson-title">Suivre ses gains</h1>
+      <div class="lesson-meta">
+        <span><i class="fas fa-clock"></i> 12 min</span>
+        <span><i class="fas fa-video"></i> Vidéo + démo</span>
+      </div>
+    </div>
+
+    <!-- VIDÉO -->
+    <div class="video-section">
+      <h2 class="section-title">
+        <i class="fas fa-play-circle"></i> Vidéo
+      </h2>
+      <div class="video-container">
+        <div class="video-placeholder" onclick="playVideo()">
+          <div class="play-btn"><i class="fas fa-play"></i></div>
+          <span>11:30</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENU -->
+    <div class="content-section">
+      <h2 class="section-title">
+        <i class="fas fa-file-alt"></i> Comment suivre vos gains
+      </h2>
+      
+      <p style="margin-bottom: 20px;">
+        Une fois vos investissements lancés, vous pouvez suivre leur évolution en temps réel.
+      </p>
+
+      <h3 style="color: var(--primary); margin: 20px 0 10px;">📊 Aperçu du tableau de bord</h3>
+      
+      <div class="dashboard-preview">
+        <div class="dashboard-item">
+          <span class="item-label">Pack Bronze</span>
+          <span class="item-value">Jour 12/50</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 24%;"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-dim);">
+          <span>Investi: 2 500 FCFA</span>
+          <span>Gagné: 1 200 FCFA</span>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-value">14 500</div>
+          <div class="stat-label">Total gagné</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">2</div>
+          <div class="stat-label">Packs actifs</div>
+        </div>
+      </div>
+
+      <h3 style="color: var(--primary); margin: 20px 0 10px;">📍 Où trouver ces informations ?</h3>
+      
+      <ul style="margin-left: 20px;">
+        <li style="margin-bottom: 10px;"><strong>Page d'accueil</strong> : Vue d'ensemble de votre solde</li>
+        <li style="margin-bottom: 10px;"><strong>Section Investissement</strong> : Détail de chaque pack</li>
+        <li style="margin-bottom: 10px;"><strong>Statistiques</strong> : Graphiques et analyses</li>
+        <li style="margin-bottom: 10px;"><strong>Historique</strong> : Tous vos mouvements</li>
+      </ul>
+
+      <div style="background: rgba(0, 255, 204, 0.05); border-radius: 12px; padding: 15px; margin: 20px 0;">
+        <p style="color: var(--primary);">
+          <i class="fas fa-clock"></i> Les gains sont versés automatiquement toutes les 24h.
+        </p>
+      </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div class="quiz-section">
+      <h2 class="section-title">
+        <i class="fas fa-question-circle"></i> Quiz
+      </h2>
+      
+      <p>Où pouvez-vous voir le détail de chaque pack d'investissement ?</p>
+      <div class="quiz-options">
+        <label class="quiz-option">
+          <input type="radio" name="quiz" value="a"> Uniquement sur la page d'accueil
+        </label>
+        <label class="quiz-option">
+          <input type="radio" name="quiz" value="b"> Dans la section Investissement
+        </label>
+        <label class="quiz-option">
+          <input type="radio" name="quiz" value="c"> Par email
+        </label>
+      </div>
+      
+      <div class="quiz-feedback" id="quizFeedback"></div>
+      <button class="quiz-btn" onclick="checkQuiz()">Vérifier</button>
+    </div>
+
+    <!-- TERMINER -->
+    <div class="complete-section">
+      <button class="complete-btn" onclick="markAsCompleted()">
+        Terminer la leçon
+      </button>
+    </div>
+
+    <!-- NAVIGATION -->
+    <div class="lesson-nav">
+      <a href="lecon1.html" class="nav-btn prev">
+        <i class="fas fa-arrow-left"></i> Leçon 1
+      </a>
+      <a href="lecon9.html" class="nav-btn next">
+        Leçon 3 <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+
+  </div>
+
+  <a href="index.html" class="back-home">
+    <i class="fas fa-home"></i> Retour à l'accueil
+  </a>
+
+  <script>
+    let userData, userId;
+    const COURSE_ID = 'debutant';
+    const MODULE_ID = 'module3';
+    const LESSON_ID = 'lecon2';
+
+    function loadUserData() {
+      userId = localStorage.getItem('earnzone_current_user');
+      if (!userId) window.location.href = '../../../login.html';
+      userData = JSON.parse(localStorage.getItem(`earnzone_user_${userId}`));
+    }
+
+    function playVideo() {
+      alert('Lecture vidéo (simulation)');
+    }
+
+    function checkQuiz() {
+      const selected = document.querySelector('input[name="quiz"]:checked');
+      if (!selected) return alert('Choisissez une réponse');
+      
+      const feedback = document.getElementById('quizFeedback');
+      if (selected.value === 'b') {
+        feedback.className = 'quiz-feedback correct';
+        feedback.innerHTML = '✅ Correct ! La section Investissement affiche tous les détails.';
+      } else {
+        feedback.className = 'quiz-feedback incorrect';
+        feedback.innerHTML = '❌ Faux. C\'est dans la section Investissement.';
+      }
+    }
+
+    function markAsCompleted() {
+      if (!userData.courseProgress) userData.courseProgress = {};
+      if (!userData.courseProgress[COURSE_ID]) {
+        userData.courseProgress[COURSE_ID] = { completedLessons: [] };
+      }
+      if (!userData.courseProgress[COURSE_ID].completedLessons.includes(LESSON_ID)) {
+        userData.courseProgress[COURSE_ID].completedLessons.push(LESSON_ID);
+        localStorage.setItem(`earnzone_user_${userId}`, JSON.stringify(userData));
+        alert('Leçon terminée !');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadUserData);
+  </script>
+
+</body>
+</html>
