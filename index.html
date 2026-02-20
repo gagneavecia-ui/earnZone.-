@@ -2,12 +2,14 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>EarnZone - Gagnez, Investissez, Apprenez</title>
+  <title>EarnZone - Investissez et Apprenez</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="icon" href="icon.png">
+  <link rel="manifest" href="manifest.json">
   
   <style>
     /* ===== VARIABLES GLOBALES ===== */
@@ -56,7 +58,6 @@
       position: relative;
       font-size: 14px;
       line-height: 1.5;
-      padding-bottom: 100px;
     }
 
     /* ===== BACKGROUND ===== */
@@ -133,16 +134,6 @@
       letter-spacing: -0.3px;
     }
 
-    .logo-badge {
-      background: linear-gradient(135deg, var(--secondary), #ff0066);
-      color: white;
-      font-size: 8px;
-      font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 20px;
-      margin-left: 4px;
-    }
-
     .menu-btn {
       width: 40px;
       height: 40px;
@@ -208,7 +199,7 @@
 
     /* ===== CONTENEUR PRINCIPAL ===== */
     .container {
-      max-width: 100%;
+      max-width: 500px;
       margin: 0 auto;
       padding: 20px 16px;
     }
@@ -371,7 +362,7 @@
       z-index: -1;
     }
 
-    /* ===== STATISTIQUES ===== */
+    /* ===== SECTION STATISTIQUES ===== */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -869,7 +860,7 @@
       transform: translateY(0);
     }
 
-   .notification-icon {
+    .notification-icon {
       width: 40px;
       height: 40px;
       background: linear-gradient(135deg, var(--primary), var(--accent));
@@ -890,22 +881,6 @@
       font-size: 12px;
       color: var(--text-dim);
     }
-
-    /* ===== ANIMATIONS ===== */
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .fade-in-up {
-      animation: fadeInUp 0.6s ease forwards;
-    }
   </style>
 </head>
 <body>
@@ -919,12 +894,10 @@
       const userId = localStorage.getItem('earnzone_current_user');
       
       if (!userId) {
-        // Rediriger vers la page de connexion
         window.location.href = 'login.html';
         return;
       }
       
-      // Vérifier que l'utilisateur existe toujours
       const userData = localStorage.getItem(`earnzone_user_${userId}`);
       if (!userData) {
         localStorage.removeItem('earnzone_current_user');
@@ -945,7 +918,7 @@
     </div>
     <div class="notification-content">
       <h4>Bienvenue sur EarnZone</h4>
-      <p>Commencez à gagner, investir et apprendre</p>
+      <p>Investissez et apprenez dès maintenant</p>
     </div>
   </div>
 
@@ -955,14 +928,11 @@
       <div class="logo-icon">
         <i class="fas fa-bolt"></i>
       </div>
-      <div class="logo-text">
-        EarnZone
-        <span class="logo-badge">PRO</span>
-      </div>
+      <div class="logo-text">EarnZone</div>
     </a>
 
     <div style="display: flex; align-items: center; gap: 10px;">
-      <a href="profil/index.html" class="user-profile" id="userProfile">
+      <a href="profil.html" class="user-profile" id="userProfile">
         <div class="user-avatar" id="userAvatar">U</div>
         <span class="user-name" id="userName">Utilisateur</span>
       </a>
@@ -980,16 +950,16 @@
       <div class="hero-content">
         <div class="hero-badge">
           <i class="fas fa-rocket"></i>
-          <span>Nouvelle plateforme 2026</span>
+          <span>Plateforme d'investissement</span>
         </div>
         
         <h1 class="hero-title">
-          Gagnez, <span>Investissez</span><br>
-          et <span>Apprenez</span>
+          Investissez et <span>apprenez</span><br>
+          avec EarnZone
         </h1>
         
         <p class="hero-description">
-          La première plateforme qui combine investissement rentable et formations de qualité.
+          La plateforme qui combine investissement rentable et formations de qualité pour maximiser vos revenus.
         </p>
         
         <div class="hero-stats">
@@ -1007,7 +977,7 @@
           </div>
         </div>
         
-        <div class="hero-buttons">
+        <div class="hero-buttons" id="actionButtons">
           <a href="investissement.html" class="btn-primary">
             <i class="fas fa-chart-line"></i>
             Investir maintenant
@@ -1045,18 +1015,18 @@
       
       <div class="stat-card">
         <div class="stat-icon">
-          <i class="fas fa-user-friends"></i>
-        </div>
-        <div class="stat-value" id="statReferrals">0</div>
-        <div class="stat-label">Filleuls</div>
-      </div>
-      
-      <div class="stat-card">
-        <div class="stat-icon">
           <i class="fas fa-graduation-cap"></i>
         </div>
         <div class="stat-value" id="statCourses">0</div>
         <div class="stat-label">Formations</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-value" id="statDays">0</div>
+        <div class="stat-label">Jours actifs</div>
       </div>
     </section>
 
@@ -1087,19 +1057,6 @@
           <div class="feature-badge">+40%</div>
         </a>
         
-        <a href="parrainage.html" class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-user-friends"></i>
-          </div>
-          <h3 class="feature-title">Parrainage</h3>
-          <p class="feature-description">
-            Gagnez 500 FCFA par ami parrainé. Illimité !
-          </p>
-          <span class="feature-link">
-            Parrainer <i class="fas fa-arrow-right"></i>
-          </span>
-          <div class="feature-badge">+500 FCFA</div>
-        </a>
       </div>
     </section>
 
@@ -1108,22 +1065,22 @@
       <div class="section-header">
         <div class="section-subtitle">Apprenez et gagnez</div>
         <h2 class="section-title">
-          Formations <span>exclusives</span>
+          <span>exclusive</span>
         </h2>
         <p class="section-description">
-          Des formations conçues par des experts.
+          formation conçue par des experts.
         </p>
       </div>
       
       <div class="formations-grid">
-        <!-- Formation 1 -->
-        <a href="formation1.html" class="formation-card">
+        <!-- Formation Débutant -->
+        <a href="formations.html" class="formation-card">
           <img src="https://images.pexels.com/photos/6802048/pexels-photo-6802048.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Formation" class="formation-image" loading="lazy">
           <div class="formation-content">
-            <span class="formation-category">Débutant</span>
-            <h3 class="formation-title">Bases de l'investissement</h3>
+            <span class="formation-category">Recommander</span>
+            <h3 class="formation-title">Lancer sont Business</h3>
             <p class="formation-description">
-              Apprenez les fondamentaux pour investir en sécurité.
+              Apprenez les fondamentaux pour lancer sont Business.
             </p>
             <div class="formation-meta">
               <span><i class="far fa-clock"></i> 2h30</span>
@@ -1135,7 +1092,7 @@
             </span>
           </div>
         </a>
-
+        
       </div>
     </section>
 
@@ -1177,7 +1134,7 @@
             <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
           </div>
           <p class="testimonial-text">
-            "Le système de parrainage est incroyable ! J'ai déjà parrainé 10 amis et gagné 5000 FCFA."
+            "La formation est claires et les investissements rentables. Je recommande vivement."
           </p>
         </div>
       </div>
@@ -1193,6 +1150,10 @@
         <a href="investissement.html" class="btn-primary">
           <i class="fas fa-chart-line"></i>
           Investir
+        </a>
+        <a href="formations.html" class="btn-secondary">
+          <i class="fas fa-graduation-cap"></i>
+          Formations
         </a>
       </div>
     </section>
@@ -1213,12 +1174,11 @@
           </div>
         </div>
         
-        <div class="footer-links">
+           <div class="footer-links">
           <h4 class="footer-title">Liens rapides</h4>
           <ul>
-            <li><a href="investissement/index.html">Investissement</a></li>
-            <li><a href="formations/index.html">Formations</a></li>
-            <li><a href="parrainage/index.html">Parrainage</a></li>
+            <li><a href="investissement.html">Investissement</a></li>
+            <li><a href="formations.html">Formations</a></li>
             <li><a href="profil/index.html">Mon profil</a></li>
           </ul>
         </div>
@@ -1247,124 +1207,79 @@
     let userData = {
       balance: 0,
       investments: 0,
-      referrals: 0,
       courses: 0,
+      daysActive: 0,
       name: "Utilisateur"
     };
 
     // ============================================
-// INITIALISATION
-// ============================================
-function init() {
-  loadUserData();
-  startSync(); // ← AJOUTÉ
-  showWelcomeNotification();
-}
-
-function loadUserData() {
-  const userId = localStorage.getItem('earnzone_current_user');
-  if (!userId) {
-    window.location.href = 'login.html';
-    return;
-  }
-  
-  const savedData = localStorage.getItem(`earnzone_user_${userId}`);
-  if (savedData) {
-    userData = JSON.parse(savedData);
-    
-    // S'assurer que investments est un tableau
-    if (!userData.investments) {
-      userData.investments = [];
-    }
-    if (!userData.referrals) {
-      userData.referrals = [];
-    }
-  }
-  
-  // Mettre à jour le profil
-  document.getElementById('userName').textContent = userData.name || 'Utilisateur';
-  document.getElementById('userAvatar').textContent = (userData.name || 'U').charAt(0).toUpperCase();
-  
-  updateUI();
-}
-
-function updateUI() {
-  // Mettre à jour les statistiques
-  document.getElementById('statBalance').textContent = (userData.balance || 0).toLocaleString('fr-FR') + ' FCFA';
-  
-  // Compter les investissements ACTIFS uniquement
-  const activeInvestments = (userData.investments || []).filter(inv => inv.status === 'active').length;
-  document.getElementById('statInvestments').textContent = activeInvestments;
-  
-  document.getElementById('statReferrals').textContent = (userData.referrals?.length || 0);
-  document.getElementById('statCourses').textContent = userData.courses || 0;
-  
-  console.log(`📊 Investissements actifs: ${activeInvestments}`); // Pour déboguer
-}
-
-function showWelcomeNotification() {
-  setTimeout(() => {
-    document.getElementById('notification').classList.add('show');
-    setTimeout(() => {
-      document.getElementById('notification').classList.remove('show');
-    }, 4000);
-  }, 1000);
-}
-
-// ============================================
-// SYNCHRONISATION EN TEMPS RÉEL
-// ============================================
-function startSync() {
-  setInterval(function() {
-    const userId = localStorage.getItem('earnzone_current_user');
-    if (!userId) return;
-    
-    const savedData = localStorage.getItem(`earnzone_user_${userId}`);
-    if (!savedData) return;
-    
-    const freshData = JSON.parse(savedData);
-    
-    // Vérifier si les données ont changé
-    if (JSON.stringify(userData) !== JSON.stringify(freshData)) {
-      console.log("🔄 Mise à jour détectée !");
-      userData = freshData;
+    // INITIALISATION
+    // ============================================
+    function init() {
+      loadUserData();
       updateUI();
+      showWelcomeNotification();
     }
-  }, 3000); // Vérifie toutes les 3 secondes
-}
 
-// ============================================
-// FONCTION DE DÉBOGAGE (optionnelle)
-// ============================================
-window.checkInvestments = function() {
-  console.log("=== VOS INVESTISSEMENTS ===");
-  console.log("Total dans userData:", userData.investments?.length || 0);
-  console.log("Détail:", userData.investments);
-};
+    function loadUserData() {
+      const userId = localStorage.getItem('earnzone_current_user');
+      if (userId) {
+        const savedData = localStorage.getItem(`earnzone_user_${userId}`);
+        if (savedData) {
+          userData = JSON.parse(savedData);
+        }
+      }
+      
+      document.getElementById('userName').textContent = userData.name || 'Utilisateur';
+      document.getElementById('userAvatar').textContent = (userData.name || 'U').charAt(0).toUpperCase();
+    }
 
-// Initialisation
-document.addEventListener('DOMContentLoaded', init);
-  
-// ============================================
-// SYNCHRONISATION EN TEMPS RÉEL
-// ============================================
-setInterval(function() {
-  const userId = localStorage.getItem('earnzone_current_user');
-  if (!userId) return;
-  
-  const savedData = localStorage.getItem(`earnzone_user_${userId}`);
-  if (!savedData) return;
-  
-  const freshData = JSON.parse(savedData);
-  
-  // Vérifier si les données ont changé (solde, investissements, etc.)
-  if (JSON.stringify(userData) !== JSON.stringify(freshData)) {
-    console.log("🔄 Mise à jour détectée !");
-    userData = freshData;
-    updateUI();
-  }
-}, 3000); // Vérifie toutes les 3 secondes
+    function updateUI() {
+      document.getElementById('statBalance').textContent = (userData.balance || 0).toLocaleString('fr-FR') + ' FCFA';
+      
+      // Compter les investissements actifs
+      const activeInvestments = (userData.investments || []).filter(inv => inv.status === 'active').length;
+      document.getElementById('statInvestments').textContent = activeInvestments;
+      
+      document.getElementById('statCourses').textContent = (userData.courses?.length || 0);
+      
+      // Calculer les jours depuis l'inscription
+      if (userData.registrationDate) {
+        const days = Math.floor((new Date() - new Date(userData.registrationDate)) / (1000 * 60 * 60 * 24));
+        document.getElementById('statDays').textContent = days;
+      }
+    }
 
+    function showWelcomeNotification() {
+      setTimeout(() => {
+        document.getElementById('notification').classList.add('show');
+        setTimeout(() => {
+          document.getElementById('notification').classList.remove('show');
+        }, 4000);
+      }, 1000);
+    }
+
+    // ============================================
+    // SYNCHRONISATION
+    // ============================================
+    setInterval(function() {
+      const userId = localStorage.getItem('earnzone_current_user');
+      if (userId) {
+        const savedData = localStorage.getItem(`earnzone_user_${userId}`);
+        if (savedData) {
+          const freshData = JSON.parse(savedData);
+          if (JSON.stringify(userData) !== JSON.stringify(freshData)) {
+            userData = freshData;
+            updateUI();
+          }
+        }
+      }
+    }, 3000);
+
+    // ============================================
+    // DÉMARRER
+    // ============================================
+    document.addEventListener('DOMContentLoaded', init);
   </script>
 
 </body>
